@@ -11,6 +11,6 @@ data class Scan(
     @Serializable(with = LocalDateTimeSerializer::class) val startTime: LocalDateTime,
     @Serializable(with = LocalDateTimeSerializer::class) val endTime: LocalDateTime?,
     val status: String,
-    val results: String,
+    val results: String?,
     val position: Int?
 )

@@ -3,12 +3,27 @@ package com.ptbox.routes
 import com.ptbox.models.CreateScanRequest
 import com.ptbox.models.UpdateScanPositionRequest
 import com.ptbox.services.ScanService
+import com.ptbox.services.WebSocketSessionManager
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 
-fun Route.scanRoutes(scanService: ScanService) {
+fun Route.scanRoutes(scanService: ScanService, sessionManager: WebSocketSessionManager) {
+    webSocket("/amass-scan") {
+        sessionManager.addSession(this)
+        try {
+            for (frame in incoming) {
+                // Keep the connection open
+            }
+        } catch (e: Exception) {
+            println("WebSocket error: ${e.localizedMessage}")
+        } finally {
+            sessionManager.removeSession(this)
+        }
+    }
+
     route("/scan") {
         post {
             val request = call.receive<CreateScanRequest>()

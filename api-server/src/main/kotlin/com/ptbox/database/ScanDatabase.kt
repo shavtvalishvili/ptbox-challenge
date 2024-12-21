@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 
 class ScanDatabase(dbUrl: String, driver: String, dbUser: String, dbPassword: String) {
 
@@ -15,7 +16,7 @@ class ScanDatabase(dbUrl: String, driver: String, dbUser: String, dbPassword: St
         val startTime = datetime("start_time")
         val endTime = datetime("end_time").nullable()
         val status = varchar("status", 50)
-        val results = text("results")
+        val results = text("results").nullable()
         val position = integer("position").autoIncrement()
         override val primaryKey = PrimaryKey(id)
     }
@@ -27,28 +28,39 @@ class ScanDatabase(dbUrl: String, driver: String, dbUser: String, dbPassword: St
         transaction {
             SchemaUtils.create(Scans)
 
-            repeat(10) { index ->
-                Scans.insert {
-                    it[domain] = "example${index + 1}.com"
-                    it[startTime] = java.time.LocalDateTime.now()
-                    it[endTime] = null
-                    it[status] = "Pending"
-                    it[results] =
-                        "example.com (FQDN) --> node --> www.example.com (FQDN) --> a_record --> 123.456.789.01 (IPAddress)"
+            if (Scans.selectAll().count() == 0L) {
+                repeat(10) { index ->
+                    Scans.insert {
+                        it[domain] = "example${index + 1}.com"
+                        it[startTime] = java.time.LocalDateTime.now()
+                        it[endTime] = null
+                        it[status] = "Pending"
+                        it[results] =
+                            """
+                                example.com (FQDN) --> ns_record --> ns-1513.awsdns-66.com (FQDN)
+                                example.com (FQDN) --> ns_record --> ns-1582.awsdns-00.au (FQDN)
+                                example.com (FQDN) --> ns_record --> ns-267.awsdns-33.com (FQDN)
+                                example.com (FQDN) --> ns_record --> ns-507.awsdns-07.net (FQDN)
+                                ns-987.awsdns-06.net (FQDN) --> a_record --> 423.251.444.22 (IPAddress)
+                                ns-987.awsdns-06.net (FQDN) --> aaaa_record --> 2600:9822:5001:8322::1 (IPAddress)
+                                205.251.192.0/21 (Netblock) --> contains --> 205.251.194.44 (IPAddress)
+                                2600:9000:5300::/45 (Netblock) --> contains --> 2600:9000:4442:0129::1 (IPAddress)
+                            """.trimIndent()
+                    }
                 }
             }
         }
     }
 
-    fun saveScan(scan: Scan) {
-        transaction {
+    fun saveScan(scan: Scan): Int {
+        return transaction {
             Scans.insert {
                 it[domain] = scan.domain
                 it[startTime] = scan.startTime
                 it[endTime] = scan.endTime
                 it[status] = scan.status
                 it[results] = scan.results
-            }
+            }.resultedValues!!.first()[Scans.id]
         }
     }
 
@@ -106,6 +118,16 @@ class ScanDatabase(dbUrl: String, driver: String, dbUser: String, dbPassword: St
 
             Scans.update({ Scans.id eq scanId }) {
                 it[position] = newPosition
+            }
+        }
+    }
+
+    fun updateScanResult(scanId: Int, newResults: String, newEndTime: LocalDateTime, newStatus: String) {
+        transaction {
+            Scans.update({ Scans.id eq scanId }) {
+                it[results] = newResults
+                it[status] = newStatus
+                it[endTime] = newEndTime
             }
         }
     }

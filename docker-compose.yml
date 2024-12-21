@@ -2,8 +2,10 @@ services:
   frontend:
     build:
       context: ./frontend-client
+      args:
+        REACT_APP_API_URL: http://localhost:8080
     ports:
-      - "5173:80"
+      - "5175:80"
     networks:
       - app-network
 
@@ -16,6 +18,7 @@ services:
       DATABASE_URL: jdbc:postgresql://db:5432/postgres
       DATABASE_USER: postgres
       DATABASE_PASSWORD: 12345678
+      DOCKER_NETWORK: app-network
     depends_on:
       db:
         condition: service_healthy
@@ -31,7 +34,7 @@ services:
       POSTGRES_PASSWORD: 12345678
       POSTGRES_DB: postgres
     ports:
-      - "5432:5432"
+      - "5432"
     networks:
       - app-network
     healthcheck:

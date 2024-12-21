@@ -27,16 +27,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install Amass precompiled binary
-RUN curl -Lo amass.zip https://github.com/owasp-amass/amass/releases/latest/download/amass_linux_arm64.zip \
-    && unzip amass.zip -d /usr/local/bin \
-    && mv /usr/local/bin/amass_Linux_arm64/amass /usr/local/bin/amass \
-    && chmod +x /usr/local/bin/amass \
-    && rm -r amass.zip /usr/local/bin/amass_Linux_arm64
-
-# Verify Amass installation
-RUN amass --version
-
 # Copy application artifacts
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/api-server.jar

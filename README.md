@@ -36,7 +36,7 @@ This OSINT web application enables users to scan specified domains using the Ama
     ```
 
 4. **Access the application**:
-    - Frontend: [http://localhost:5173](http://localhost:5173)
+    - Frontend: [http://localhost:5175](http://localhost:5175)
     - Backend API: [http://localhost:8080](http://localhost:8080)
 
 ## Backend API Endpoints
