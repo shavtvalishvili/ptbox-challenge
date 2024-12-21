@@ -21,7 +21,7 @@ export const useCreateScan = () => {
   return useMutation({
     mutationFn: createScan,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scans'] })
+      void queryClient.invalidateQueries({ queryKey: ['scans'] })
     },
   })
 };
@@ -32,7 +32,7 @@ export const useUpdateScanPosition = () => {
   return useMutation({
     mutationFn: updateScanPosition,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scans'] })
+      void queryClient.invalidateQueries({ queryKey: ['scans'] })
     },
   });
 };

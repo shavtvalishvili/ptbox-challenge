@@ -4,6 +4,6 @@ export type Scan = {
   startTime: string;
   endTime: string | null;
   status: "Completed" | "Failed";
-  results: string;
+  results?: string;
   position?: number;
 };

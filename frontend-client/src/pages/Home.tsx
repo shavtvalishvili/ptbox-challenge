@@ -5,15 +5,27 @@ import { Box, Button, CircularProgress, Grid2 } from '@mui/material';
 import DomainScanModal from "../components/DomainScanModal.tsx";
 import ScanCard from "../components/ScanCard.tsx";
 import { Scan } from "../types/Scan";
+import useWebSocket from "react-use-websocket";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Home = () => {
+  const queryClient = useQueryClient();
   const [showScanButton, setShowScanButton] = useState(true);
   const [openModal, setOpenModal] = useState(false);
 
   const { data: scans, isLoading: isScansLoading } = useScans();
   const { mutate: createScan, isPending: isCreateScanPending } = useCreateScan();
+  const { lastMessage } = useWebSocket("http://localhost:8080/amass-scan");
 
   const [sortedScans, setSortedScans] = useState<Scan[]>([]);
+
+  useEffect(() => {
+    if (lastMessage) {
+      console.log("Scan object updated values:", lastMessage);
+
+      void queryClient.invalidateQueries({ queryKey: ['scans'] });
+    }
+  }, [lastMessage, queryClient]);
 
   useEffect(() => {
     if (scans && !isScansLoading) {

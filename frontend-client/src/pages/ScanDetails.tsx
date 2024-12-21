@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Box, CircularProgress, SxProps, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid2, SxProps, Typography } from "@mui/material";
 import { useScanById } from "../hooks/useScan.ts";
 import { ReactNode } from "react";
 
@@ -64,19 +64,19 @@ const ScanDetails = ({ scanId: scanIdFromProps, sx }: ScanDetailsProps) => {
           Scan Results:
         </Typography>
         {scan.results ? (
-          <>
-            {scan.results.split(" --> ").map((line, index) => (
-              <Typography
+          <Grid2 container direction="column" spacing={1} mt={1}>
+            {scan.results.split('\n').map(((item, index) => (
+              <Grid2
                 key={index}
-                fontStyle={index % 2 ? "italic" : "normal"}
-                color={index % 2 ? "textSecondary" : "textPrimary"}
+                size={{ xs: 12 }}
+                bgcolor={index % 2 ? '#f5f5f5' : 'transparent'}
               >
-                {line}
-              </Typography>
-            ))}
-          </>
+                {item}
+              </Grid2>
+            )))}
+          </Grid2>
         ) : (
-          <Typography>No subdomains found for this scan.</Typography>
+          <Typography>Scan in progress</Typography>
         )}
       </Box>
     </Box>
