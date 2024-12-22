@@ -86,7 +86,7 @@ class ScanService(private val database: ScanDatabase, private val sessionManager
                 .withFollowStream(true)
                 .exec(object : ResultCallback.Adapter<Frame>() {
                     override fun onNext(frame: Frame) {
-                        logs.append(String(frame.payload) + '\n')
+                        logs.append(String(frame.payload))
                     }
                 }).awaitCompletion(5, TimeUnit.MINUTES)
         } catch (e: Exception) {
