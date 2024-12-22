@@ -64,7 +64,15 @@ const ScanDetails = ({ scanId: scanIdFromProps, sx }: ScanDetailsProps) => {
           Scan Results:
         </Typography>
         {scan.results ? (
-          <Grid2 container direction="column" spacing={1} mt={1}>
+          <Grid2
+            container
+            spacing={1}
+            mt={1}
+            size={{}}
+            sx={{
+              overflowY: "scroll",
+              maxHeight: "350px"
+            }}>
             {scan.results.split('\n').map(((item, index) => (
               <Grid2
                 key={index}

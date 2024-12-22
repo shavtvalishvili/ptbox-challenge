@@ -14,7 +14,11 @@ const ScanDetailsModal = ({
                             scanId,
                           }: ScanDetailsModalProps) => {
   return (
-    <DefaultModal isOpen={isOpen} onClose={onClose} sx={{ width: 600 }}>
+    <DefaultModal isOpen={isOpen} onClose={onClose} sx={{
+      maxHeight: "100vh",
+      overflowY: "scroll",
+      width: 600
+    }}>
       <Typography variant="h6" mb={2}>
         Scan Details
       </Typography>
